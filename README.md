@@ -5,19 +5,19 @@ It is designed to connect seamlessly with your backend (LLM, RAG pipeline, or cu
 
 ---
 
-## ✨ Features
-- 📦 **Two ready‑to‑use components**:
+## Features
+- **Two ready‑to‑use components**:
   - `<ChatBot />` – a customizable chat window UI with typing indicators, themes, popup/float display modes, and smooth animations.
   - `<VoiceBot />` – a voice assistant UI with recording, “thinking…”, typing transcription, and audio playback in a popup modal.
-- 🎨 **Light & Dark mode support** via a simple `darkMode` prop.
-- 🔗 **Backend integration** through a `backendUrl` prop – just point to your API endpoint.
-- ⚡ Sleek, modern UI powered by **TailwindCSS**.
-- 🛠 Built with **TypeScript**, but works in both JS and TS projects.
-- 🔄 First‑class support for [`node-ragbot`](https://www.npmjs.com/package/node-ragbot) – a backend companion package that provides ready‑to‑use REST APIs for chat and voice.  
+- **Light & Dark mode support** via a simple `darkMode` prop.
+- **Backend integration** through a `backendUrl` prop – just point to your API endpoint.
+- Sleek, modern UI powered by **TailwindCSS**.
+- Built with **TypeScript**, but works in both JS and TS projects.
+- First‑class support for [`node-ragbot`](https://www.npmjs.com/package/node-ragbot) – a backend companion package that provides ready‑to‑use REST APIs for chat and voice.  
 
 ---
 
-## 📦 Installation
+## Installation
 
 ### Frontend (React)
 ```bash
@@ -41,7 +41,7 @@ This package exposes REST endpoints (`/api/bot/chat` and `/api/bot/voice`) that 
 
 ---
 
-## 🚀 Usage
+## Usage
 
 ### ChatBot
 
@@ -80,7 +80,7 @@ function App() {
 
 ---
 
-## 🔧 Props
+## Props
 
 ### ChatBot Props
 
@@ -105,7 +105,7 @@ function App() {
 
 ---
 
-## ⚙️ How It Works
+## How It Works
 
 - **ChatBot**  
   - Renders a chat UI with floating/popup modes.  
@@ -130,7 +130,7 @@ function App() {
 
 ---
 
-## 🔗 Backend with node-ragbot
+## Backend with node-ragbot
 
 For quickest integration, install the [`node-ragbot`](https://www.npmjs.com/package/node-ragbot) backend package.  
 
@@ -144,7 +144,7 @@ The React components are pre‑configured to call these endpoints, so frontend +
 
 ---
 
-## 🎯 When to Use
+## When to Use
 
 - Add an **AI support assistant** to your SaaS app.  
 - Build **RAG (Retrieval-Augmented Generation)** frontends quickly.  
@@ -153,7 +153,7 @@ The React components are pre‑configured to call these endpoints, so frontend +
 
 ---
 
-## 🛠 Development
+## Development
 
 Clone and run locally:
 
@@ -166,6 +166,6 @@ npm run dev
 
 ---
 
-## 📜 License
+## License
 
 MIT License © 2025
