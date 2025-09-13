@@ -273,7 +273,7 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
 
   const renderPopupContent = () => (
     <div
-      className={`w-full max-w-lg mx-auto rounded-2xl backdrop-blur-lg border transition-all duration-300 ${
+      className={`ragbot-voice w-full max-w-lg mx-auto rounded-2xl backdrop-blur-lg border transition-all duration-300 ${
         darkMode
           ? "bg-gray-900/95 border-gray-700/50 text-white"
           : "bg-white/95 border-gray-200/50 text-gray-900"

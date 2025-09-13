@@ -176,7 +176,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
   const ChatWindow = () => (
     <div
       className={`
-        flex flex-col w-96 h-[500px]
+        ragbot-chat flex flex-col w-96 h-[500px]
         ${
           darkMode
             ? "bg-slate-900/95 border-slate-600/80"
