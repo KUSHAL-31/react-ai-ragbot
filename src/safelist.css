@@ -1,0 +1,59 @@
+/* 
+ * Safelist CSS - Import this in your main CSS if classes are still missing
+ * This forces Tailwind to include these classes in the build
+ */
+
+.safelist-hidden {
+  /* Animation classes */
+  @apply animate-spin animate-pulse;
+
+  /* Layout & positioning */
+  @apply fixed absolute relative inset-0 bottom-6 right-6 z-50 z-[60] z-10;
+
+  /* Flexbox */
+  @apply flex flex-1 flex-shrink-0 items-center justify-center justify-between;
+  @apply gap-3 gap-4 space-x-1;
+
+  /* Sizing */
+  @apply w-1 w-4 w-6 w-8 w-14 w-16 w-full max-w-lg min-w-0;
+  @apply h-4 h-6 h-8 h-14 h-16 h-32;
+
+  /* Spacing */
+  @apply p-3 p-4 p-6 px-4 py-2 m-6 mb-4 mb-6 mx-6 mx-auto;
+
+  /* Borders & radius */
+  @apply border border-2 border-b rounded-lg rounded-xl rounded-2xl rounded-full;
+
+  /* Colors - backgrounds */
+  @apply bg-white bg-white/90 bg-white/95 bg-gray-50 bg-gray-50/50 bg-gray-100;
+  @apply bg-gray-800 bg-gray-800/50 bg-gray-900 bg-gray-900/20 bg-gray-900/90 bg-gray-900/95;
+  @apply bg-blue-400 bg-blue-500 bg-blue-600 bg-red-500 bg-red-600;
+  @apply bg-red-900/20 bg-red-50;
+
+  /* Colors - borders */
+  @apply border-gray-200 border-gray-200/20 border-gray-200/50;
+  @apply border-gray-700 border-gray-700/50 border-blue-500;
+  @apply border-red-500 border-red-800/50 border-red-200;
+
+  /* Colors - text */
+  @apply text-white text-gray-400 text-gray-600 text-gray-700 text-gray-900;
+  @apply text-red-400 text-red-700 text-sm text-base text-lg;
+  @apply font-medium font-semibold whitespace-nowrap whitespace-pre-wrap leading-relaxed;
+
+  /* Hover states */
+  @apply hover:bg-gray-50 hover:bg-gray-100 hover:bg-gray-800;
+  @apply hover:bg-blue-600 hover:bg-red-600 hover:border-blue-600 hover:border-red-600;
+  @apply hover:text-white hover:text-gray-900 hover:scale-105;
+
+  /* Focus & interaction */
+  @apply focus:outline-none focus:ring-4 focus:ring-blue-500/30;
+  @apply cursor-not-allowed disabled:opacity-50;
+
+  /* Effects */
+  @apply backdrop-blur-sm backdrop-blur-lg shadow-lg shadow-2xl;
+  @apply transition-all transition-colors duration-200 duration-300;
+  @apply opacity-50 opacity-60;
+
+  /* Overflow */
+  @apply overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-transparent;
+}
