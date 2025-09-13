@@ -1,10 +1,46 @@
 {
-  "name": "react-ragbot",
+  "name": "react-ai-ragbot",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "types": "dist/index.d.ts",
+  "description": "React component library that provides plug-and-play AI chat and voice assistant UIs. Designed to work seamlessly with the node-ragbot backend, it enables developers to quickly add an OpenAI-powered conversational experience to any website or app. Features include a modern ChatBot interface with popup/float modes, a VoiceBot interface with speech recording and playback, TailwindCSS-based styling, TypeScript support, and easy integration with LangChain + OpenAI APIs. Future updates will expand plug-and-play support to additional LLMs (Gemini, Groq, Azure) and TTS/STT providers (ElevenLabs, Deepgram).",
+  "keywords": [
+    "react",
+    "react-component",
+    "chatbot",
+    "chat-bot",
+    "voicebot",
+    "voice-assistant",
+    "ai",
+    "artificial-intelligence",
+    "conversational-ai",
+    "assistant",
+    "virtual-assistant",
+    "openai",
+    "gpt",
+    "gpt-4",
+    "gpt-3.5",
+    "llm",
+    "rag",
+    "langchain",
+    "embeddings",
+    "typescript",
+    "frontend",
+    "ui-library",
+    "support-bot"
+  ],
+  "author": "Kushal Soni",
+  "license": "MIT",
+  "homepage": "https://github.com/KUSHAL-31/react-ai-ragbot#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KUSHAL-31/react-ai-ragbot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/KUSHAL-31/react-ai-ragbot/issues"
+  },
   "files": [
     "dist"
   ],

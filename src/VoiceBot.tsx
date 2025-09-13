@@ -327,7 +327,9 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
               renderWaves()
             ) : (
               <div className="text-base font-medium">
-                {isProcessing || isPlaying ? "Assistant" : "Ready to listen"}
+                {isProcessing || isPlaying
+                  ? "Answering your question..."
+                  : "Ready to listen"}
               </div>
             )}
           </div>

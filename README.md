@@ -1,6 +1,6 @@
-# react-ragbot
+# react-ai-ragbot
 
-`react-ragbot` is a modern React + TypeScript component library that provides drop‑in **AI chat and voice assistant UIs**.  
+`react-ai-ragbot` is a modern React + TypeScript component library that provides drop‑in **AI chat and voice assistant UIs**.  
 It is designed to connect seamlessly with your backend (LLM, RAG pipeline, or custom AI service) and give users an experience similar to ChatGPT or Google Assistant.
 
 ---
@@ -21,13 +21,13 @@ It is designed to connect seamlessly with your backend (LLM, RAG pipeline, or cu
 
 ### Frontend (React)
 ```bash
-npm install react-ragbot
+npm install react-ai-ragbot
 ```
 
 or
 
 ```bash
-yarn add react-ragbot
+yarn add react-ai-ragbot
 ```
 
 ### Backend (Node)
@@ -46,7 +46,7 @@ This package exposes REST endpoints (`/api/bot/chat` and `/api/bot/voice`) that 
 ### ChatBot
 
 ```tsx
-import { ChatBot } from "react-ragbot";
+import { ChatBot } from "react-ai-ragbot";
 
 function App() {
   return (
@@ -65,7 +65,7 @@ function App() {
 ### VoiceBot
 
 ```tsx
-import { VoiceBot } from "react-ragbot";
+import { VoiceBot } from "react-ai-ragbot";
 
 function App() {
   return (
@@ -158,8 +158,8 @@ The React components are pre‑configured to call these endpoints, so frontend +
 Clone and run locally:
 
 ```bash
-git clone https://github.com/your-org/react-ragbot.git
-cd react-ragbot
+git clone https://github.com/your-org/react-ai-ragbot.git
+cd react-ai-ragbot
 npm install
 npm run dev
 ```
