@@ -402,12 +402,31 @@ const ChatBot: React.FC<ChatBotProps> = ({
     if (!isOpen) {
       return (
         <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
-          <button
-            onClick={() => setIsOpen(true)}
-            className={`w-16 h-16 rounded-full text-white flex items-center justify-center ${buttonColors.background} shadow-lg ${buttonColors.shadow}`}
-          >
-            <MessageCircle size={28} />
-          </button>
+          <div className="relative flex items-center gap-3">
+            {/* Optional button text */}
+            {buttonText && (
+              <div
+                className={`
+                px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap shadow-lg
+                ${
+                  darkMode
+                    ? "bg-slate-800 text-slate-200 border border-slate-600"
+                    : "bg-white text-slate-700 border border-slate-200"
+                }
+              `}
+              >
+                {buttonText}
+              </div>
+            )}
+
+            {/* Popup trigger button */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className={`w-16 h-16 rounded-full text-white flex items-center justify-center ${buttonColors.background} shadow-lg ${buttonColors.shadow}`}
+            >
+              <MessageCircle size={28} />
+            </button>
+          </div>
         </div>
       );
     }
