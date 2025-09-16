@@ -21,10 +21,10 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
 
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const typingInterval = useRef<number | null>(null);
   const textContainerRef = useRef<HTMLDivElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -32,7 +32,6 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
     }
   }, []);
 
-  // Auto-scroll to bottom when text changes
   useEffect(() => {
     if (textContainerRef.current) {
       textContainerRef.current.scrollTo({
@@ -43,35 +42,22 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
   }, [typedText]);
 
   const resetAllStates = () => {
-    // Stop recording if in progress
-    if (mediaRecorder.current && isRecording) {
-      mediaRecorder.current.stop();
-    }
-
-    // Stop and cleanup audio stream
+    if (mediaRecorder.current && isRecording) mediaRecorder.current.stop();
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
-
-    // Stop audio playback
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current.src = "";
     }
-
-    // Clear typing animation
     stopTypingAnimation();
-
-    // Reset all states
     setIsRecording(false);
     setIsProcessing(false);
     setIsPlaying(false);
     setError("");
     setTypedText("Tap to speak");
-
-    // Clear audio chunks
     audioChunks.current = [];
     mediaRecorder.current = null;
   };
@@ -80,26 +66,16 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
     try {
       setError("");
       setTypedText("Listening...");
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
-        },
-      });
-
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
+
       mediaRecorder.current = new MediaRecorder(stream, {
         mimeType: "audio/webm;codecs=opus",
       });
-
       audioChunks.current = [];
 
       mediaRecorder.current.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunks.current.push(event.data);
-        }
+        if (event.data.size > 0) audioChunks.current.push(event.data);
       };
 
       mediaRecorder.current.onstop = () => {
@@ -109,8 +85,6 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
           });
           processVoiceInput(audioBlob);
         }
-
-        // Cleanup stream
         if (streamRef.current) {
           streamRef.current.getTracks().forEach((track) => track.stop());
           streamRef.current = null;
@@ -136,22 +110,45 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
 
   const processVoiceInput = async (audioBlob: Blob) => {
     try {
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "audio.webm");
-
-      const response = await fetch(`${backendUrl}/api/bot/voice`, {
+      const arrayBuffer = await audioBlob.arrayBuffer();
+      const response = await fetch(`${backendUrl}/voice`, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "audio/webm" },
+        body: arrayBuffer,
       });
 
-      const data = await response.json();
+      if (!response.ok) throw new Error("Server error");
 
-      if (data.success) {
-        playAudio(data.audio, data.answer);
+      const { transcription, answer, audio } = await response.json();
+
+      if (answer) startTypingAnimation(answer);
+
+      if (audio && audioRef.current) {
+        const audioBlob = new Blob(
+          [Uint8Array.from(atob(audio), (c) => c.charCodeAt(0))],
+          {
+            type: "audio/mpeg",
+          }
+        );
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioRef.current.src = audioUrl;
+        audioRef.current.onloadeddata = () => {
+          setIsProcessing(false);
+          setIsPlaying(true);
+          audioRef.current?.play();
+        };
+        audioRef.current.onended = () => {
+          setIsPlaying(false);
+          URL.revokeObjectURL(audioUrl);
+        };
+        audioRef.current.onerror = (e) => {
+          console.error("Audio playback error:", e);
+          setIsPlaying(false);
+          URL.revokeObjectURL(audioUrl);
+          setError("Failed to play audio response");
+        };
       } else {
-        setError(data.error || "Failed to process voice input");
         setIsProcessing(false);
-        setTypedText("Tap to speak");
       }
     } catch (err) {
       setError(`Failed to process audio: ${(err as Error).message}`);
@@ -160,55 +157,14 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
     }
   };
 
-  const playAudio = (audioBase64: string, transcription: string) => {
-    try {
-      const audioBlob = new Blob(
-        [Uint8Array.from(atob(audioBase64), (c) => c.charCodeAt(0))],
-        { type: "audio/mp3" }
-      );
-      const audioUrl = URL.createObjectURL(audioBlob);
-
-      if (audioRef.current) {
-        audioRef.current.src = audioUrl;
-        audioRef.current.onloadeddata = () => {
-          setIsProcessing(false);
-          setIsPlaying(true);
-          audioRef.current?.play();
-          startTypingAnimation(transcription);
-        };
-
-        audioRef.current.onended = () => {
-          setIsPlaying(false);
-          stopTypingAnimation();
-          URL.revokeObjectURL(audioUrl);
-        };
-
-        audioRef.current.onerror = () => {
-          setError("Failed to play audio response");
-          setIsProcessing(false);
-          setIsPlaying(false);
-          // Keep the text instead of resetting
-          URL.revokeObjectURL(audioUrl);
-        };
-      }
-    } catch (err) {
-      setError(`Failed to play audio: ${(err as Error).message}`);
-      setIsProcessing(false);
-      setTypedText("Tap to speak");
-    }
-  };
-
   const startTypingAnimation = (text: string) => {
     stopTypingAnimation();
-
     if (!text || text.length === 0) {
       setTypedText("Tap to speak");
       return;
     }
-
     setTypedText("");
     let index = 0;
-
     const typeNextChar = () => {
       if (index < text.length) {
         setTypedText(text.substring(0, index + 1));
@@ -216,7 +172,6 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
         typingInterval.current = window.setTimeout(typeNextChar, 50);
       }
     };
-
     typeNextChar();
   };
 
@@ -233,7 +188,6 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
       setIsPopupOpen(true);
       return;
     }
-
     if (isRecording) {
       stopRecording();
     } else if (!isProcessing && !isPlaying) {
@@ -242,11 +196,7 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
   };
 
   const closePopup = () => {
-    // Don't allow closing if audio is playing
-    if (isPlaying) {
-      return;
-    }
-
+    if (isPlaying) return;
     resetAllStates();
     setIsPopupOpen(false);
   };
@@ -406,17 +356,17 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
           <style>
             {`
-              @keyframes waveAnimation {
-                0%, 100% {
-                  height: 8px;
-                  opacity: 0.6;
-                }
-                50% {
-                  height: 24px;
-                  opacity: 1;
-                }
-              }
-            `}
+                    @keyframes waveAnimation {
+                      0%, 100% {
+                        height: 8px;
+                        opacity: 0.6;
+                      }
+                      50% {
+                        height: 24px;
+                        opacity: 1;
+                      }
+                    }
+                  `}
           </style>
           <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
@@ -427,7 +377,6 @@ const VoiceBot: React.FC<VoiceBotProps> = ({
           </div>
         </div>
       )}
-
       <audio ref={audioRef} style={{ display: "none" }} />
     </>
   );

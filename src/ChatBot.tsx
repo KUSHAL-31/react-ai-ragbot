@@ -164,7 +164,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <div
               className={`
-                px-4 py-3 rounded-xl rounded-tl-sm text-left
+                px-4 py-3 rounded-xl rounded-tl-sm text-left text-sm
                 ${
                   darkMode
                     ? "bg-slate-800/80 border border-slate-600/60"
@@ -172,7 +172,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 }
               `}
             >
-              Typing...
+              Thinking...
             </div>
           </div>
         )}
@@ -184,7 +184,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             </div>
             <div
               className={`
-                px-4 py-3 rounded-xl rounded-tl-sm text-sm text-left
+                px-4 py-3 rounded-xl rounded-tl-sm text-sm text-left leading-relaxed
                 ${
                   darkMode
                     ? "bg-slate-800/80 text-slate-200 border border-slate-600/60"
@@ -193,7 +193,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               `}
             >
               {typingText}
-              <span className="inline-block w-0.5 h-4 ml-0.5 bg-blue-500 animate-pulse" />
+              <span className="inline-block w-0.5 h-3.5 ml-0.5 bg-blue-500 animate-pulse" />
             </div>
           </div>
         )}
@@ -217,14 +217,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <textarea
             ref={inputRef}
             value={inputValue}
-            onChange={(e) =>
-              e.target &&
-              (e.target as HTMLTextAreaElement).value !== undefined &&
-              e.target.value !== undefined &&
-              e.target.value !== null
-                ? setInputValue(e.target.value)
-                : null
-            }
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Type your message..."
             rows={1}
@@ -288,33 +281,52 @@ const ChatBot: React.FC<ChatBotProps> = ({
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
-  const animateTyping = (text: string, callback: () => void) => {
+  const startTypingAnimation = (text: string) => {
     setIsTyping(true);
     setTypingText("");
-    let i = 0;
-    const typeWriter = () => {
-      if (i < text.length) {
-        setTypingText(text.substring(0, i + 1));
-        i++;
-        setTimeout(typeWriter, 20 + Math.random() * 30);
+    let index = 0;
+
+    const typeNextChar = () => {
+      if (index < text.length) {
+        setTypingText(text.substring(0, index + 1));
+        index++;
+        typingIntervalRef.current = setTimeout(typeNextChar, 30); // Typing speed
       } else {
-        setTimeout(() => {
-          setIsTyping(false);
-          setTypingText("");
-          callback();
-        }, 300);
+        // Typing animation finished
+        setIsTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: Date.now() + 1,
+            text: text,
+            isBot: true,
+            timestamp: new Date(),
+          },
+        ]);
       }
     };
-    typeWriter();
+
+    typeNextChar();
+  };
+
+  const stopTypingAnimation = () => {
+    if (typingIntervalRef.current) {
+      clearTimeout(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    setIsTyping(false);
+    setTypingText("");
   };
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || isLoading) return;
+    if (!inputValue.trim() || isLoading || isTyping) return;
+
     const userMessage: Message = {
       id: Date.now(),
       text: inputValue,
@@ -327,36 +339,32 @@ const ChatBot: React.FC<ChatBotProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${backendUrl}/api/bot/chat`, {
+      const response = await fetch(`${backendUrl}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
       });
+
       if (!response.ok) throw new Error("Failed to get response");
 
       const data = await response.json();
       const botResponse =
         data.answer || "Sorry, I couldn't process your request.";
+
       setIsLoading(false);
-      animateTyping(botResponse, () => {
-        const botMessage: Message = {
-          id: Date.now() + 1,
-          text: botResponse,
-          isBot: true,
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, botMessage]);
-      });
+      startTypingAnimation(botResponse);
     } catch (error) {
       console.error("Error:", error);
       setIsLoading(false);
-      const errorMessage: Message = {
-        id: Date.now() + 1,
-        text: "Sorry, there was an error processing your request. Please try again.",
-        isBot: true,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          text: "Sorry, there was an error processing your request. Please try again.",
+          isBot: true,
+          timestamp: new Date(),
+        },
+      ]);
     }
   };
 
@@ -368,6 +376,7 @@ const ChatBot: React.FC<ChatBotProps> = ({
   };
 
   const resetChat = () => {
+    stopTypingAnimation();
     setMessages([
       {
         id: 1,
@@ -378,15 +387,12 @@ const ChatBot: React.FC<ChatBotProps> = ({
     ]);
     setInputValue("");
     setIsLoading(false);
-    setIsTyping(false);
-    setTypingText("");
     setIsOpen(false);
   };
 
   const formatTime = (date: Date) =>
     date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-  // Theme colors
   const buttonColors = darkMode
     ? {
         background: "bg-gradient-to-r from-slate-700 to-slate-600",
@@ -403,7 +409,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
       return (
         <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
           <div className="relative flex items-center gap-3">
-            {/* Optional button text */}
             {buttonText && (
               <div
                 className={`
@@ -418,8 +423,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
                 {buttonText}
               </div>
             )}
-
-            {/* Popup trigger button */}
             <button
               onClick={() => setIsOpen(true)}
               className={`w-16 h-16 rounded-full text-white flex items-center justify-center ${buttonColors.background} shadow-lg ${buttonColors.shadow}`}
@@ -485,7 +488,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
       )}
       <div className={`fixed bottom-6 right-6 z-50 ${className}`}>
         <div className="relative flex items-center gap-3">
-          {/* Optional button text */}
           {buttonText && !isOpen && (
             <div
               className={`
@@ -500,8 +502,6 @@ const ChatBot: React.FC<ChatBotProps> = ({
               {buttonText}
             </div>
           )}
-
-          {/* Floating Action Button */}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
             className={`w-16 h-16 rounded-full text-white flex items-center justify-center ${buttonColors.background} shadow-lg ${buttonColors.shadow}`}

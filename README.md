@@ -37,7 +37,7 @@ Install the companion backend package:
 npm install node-ragbot
 ```
 
-This package exposes REST endpoints (`/api/bot/chat` and `/api/bot/voice`) that are fully compatible with the React components.  
+This package exposes REST endpoints (`/chat` and `/voice`) that are fully compatible with the React components.  
 
 ---
 
@@ -51,12 +51,12 @@ import { ChatBot } from "react-ai-ragbot";
 function App() {
   return (
     <ChatBot
-      backendUrl="http://localhost:5000" // your backend base URL
-      darkMode={false}                   // optional: light (false) or dark (true)
-      title="AI Support"                 // optional: header title
-      displayMode="float"                // "float" (default) or "popup"
-      buttonText="Need help?"            // optional: label beside floating button
-      className="custom-class"           // optional: extra classes
+      backendUrl="http://localhost:5000/api/bot" // base URL + prefix if defined
+      darkMode={false}                           // optional: light (false) or dark (true)
+      title="AI Support"                         // optional: header title
+      displayMode="float"                        // "float" (default) or "popup"
+      buttonText="Need help?"                    // optional: label beside floating button
+      className="custom-class"                   // optional: extra classes
     />
   );
 }
@@ -70,9 +70,9 @@ import { VoiceBot } from "react-ai-ragbot";
 function App() {
   return (
     <VoiceBot
-      backendUrl="http://localhost:5000" // your backend base URL
-      darkMode={true}                    // optional: light (false) or dark (true)
-      text="Talk to me"                  // optional: label beside mic button
+      backendUrl="http://localhost:5000/api/bot" // must include the same prefix as your backend
+      darkMode={true}                            // optional: light (false) or dark (true)
+      text="Talk to me"                          // optional: label beside mic button
     />
   );
 }
